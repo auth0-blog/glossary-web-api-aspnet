@@ -2,14 +2,15 @@ using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using System.IO;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Glossary.Controllers
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class GlossaryController: ControllerBase
-    {
-        private static List<GlossaryItem> Glossary = new List<GlossaryItem> {
+  [ApiController]
+  [Route("api/[controller]")]
+  public class GlossaryController : ControllerBase
+  {
+    private static List<GlossaryItem> Glossary = new List<GlossaryItem> {
             new GlossaryItem
             {
                 Term= "Access Token",
@@ -27,78 +28,83 @@ namespace Glossary.Controllers
             }
         };
 
-        [HttpGet]
-        public ActionResult<List<GlossaryItem>> Get()
-        {
-            return Ok(Glossary);
-        }
-
-        [HttpGet]
-        [Route("{term}")]
-        public ActionResult<GlossaryItem> Get(string term)
-        {
-            var glossaryItem = Glossary.Find(item => 
-                    item.Term.Equals(term, StringComparison.InvariantCultureIgnoreCase));
-
-            if (glossaryItem == null)
-            {
-                return NotFound();
-            } else
-            {
-                return Ok(glossaryItem);
-            }
-        }
-
-        [HttpPost]
-        public ActionResult Post(GlossaryItem glossaryItem)
-        {
-            var existingGlossaryItem = Glossary.Find(item =>
-                    item.Term.Equals(glossaryItem.Term, StringComparison.InvariantCultureIgnoreCase));
-
-            if (existingGlossaryItem != null)
-            {
-                return Conflict("Cannot create the term because it already exists.");
-            }
-            else
-            {
-                Glossary.Add(glossaryItem);
-                var resourceUrl = Path.Combine(Request.Path.ToString(), Uri.EscapeUriString(glossaryItem.Term));
-                return Created(resourceUrl, glossaryItem);
-            }
-        }
-
-        [HttpPut]
-    		public ActionResult Put(GlossaryItem glossaryItem)
-    		{
-        		var existingGlossaryItem = Glossary.Find(item =>
-                item.Term.Equals(glossaryItem.Term, StringComparison.InvariantCultureIgnoreCase));
-
-		        if (existingGlossaryItem == null)
-    		    {
-        		    return NotFound("Cannot update a nont existing term.");
-		        } else
-    		    {
-        		    existingGlossaryItem.Definition = glossaryItem.Definition;
-            		return Ok();
-        		}
-    		}
-
-        [HttpDelete]
-        [Route("{term}")]
-        public ActionResult Delete(string term)
-        {
-            var glossaryItem = Glossary.Find(item =>
-                   item.Term.Equals(term, StringComparison.InvariantCultureIgnoreCase));
-
-            if (glossaryItem == null)
-            {
-                return NotFound();
-            }
-            else
-            {
-                Glossary.Remove(glossaryItem);
-                return NoContent();
-            }
-        }
+    [HttpGet]
+    public ActionResult<List<GlossaryItem>> Get()
+    {
+      return Ok(Glossary);
     }
+
+    [HttpGet]
+    [Route("{term}")]
+    public ActionResult<GlossaryItem> Get(string term)
+    {
+      var glossaryItem = Glossary.Find(item =>
+              item.Term.Equals(term, StringComparison.InvariantCultureIgnoreCase));
+
+      if (glossaryItem == null)
+      {
+        return NotFound();
+      }
+      else
+      {
+        return Ok(glossaryItem);
+      }
+    }
+
+    [HttpPost]
+    [Authorize]
+    public ActionResult Post(GlossaryItem glossaryItem)
+    {
+      var existingGlossaryItem = Glossary.Find(item =>
+              item.Term.Equals(glossaryItem.Term, StringComparison.InvariantCultureIgnoreCase));
+
+      if (existingGlossaryItem != null)
+      {
+        return Conflict("Cannot create the term because it already exists.");
+      }
+      else
+      {
+        Glossary.Add(glossaryItem);
+        var resourceUrl = Path.Combine(Request.Path.ToString(), Uri.EscapeUriString(glossaryItem.Term));
+        return Created(resourceUrl, glossaryItem);
+      }
+    }
+
+    [HttpPut]
+    [Authorize]
+    public ActionResult Put(GlossaryItem glossaryItem)
+    {
+      var existingGlossaryItem = Glossary.Find(item =>
+          item.Term.Equals(glossaryItem.Term, StringComparison.InvariantCultureIgnoreCase));
+
+      if (existingGlossaryItem == null)
+      {
+        return NotFound("Cannot update a nont existing term.");
+      }
+      else
+      {
+        existingGlossaryItem.Definition = glossaryItem.Definition;
+        return Ok();
+      }
+    }
+
+    [HttpDelete]
+    [Route("{term}")]
+    [Authorize]
+    public ActionResult Delete(string term)
+    {
+      var glossaryItem = Glossary.Find(item =>
+             item.Term.Equals(term, StringComparison.InvariantCultureIgnoreCase));
+
+      if (glossaryItem == null)
+      {
+        return NotFound();
+      }
+      else
+      {
+        Glossary.Remove(glossaryItem);
+        return NoContent();
+      }
+    }
+  }
 }
