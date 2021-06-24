@@ -1,13 +1,13 @@
 This repository contains a basic glossary CRUD Web API implemented in ASP.NET and secured with [Auth0](https://auth0.com/).
 
-The following article describes the implementation details: [Managing Authorization for ASP.NET Web APIs](https://auth0.com/blog/aspnet-web-api-authorization/)
+The following article describes the implementation details: [Permission-Based Security for ASP.NET Web APIs](https://auth0.com/blog/permission-based-security-for-aspnet-webapi/)
 
 ## To run this application:
 
 1. Clone the repo with the following command: 
 
    ```bash
-   git clone --branch add-authorization --single-branch https://github.com/auth0-blog/glossary-web-api-aspnet.git
+   git clone --branch add-permission --single-branch https://github.com/auth0-blog/glossary-web-api-aspnet.git
    ```
 
 2. Move to the `glossary-web-api-aspnet` folder 
