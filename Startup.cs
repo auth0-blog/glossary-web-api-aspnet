@@ -57,6 +57,12 @@ namespace Glossary
               { securitySchema, new[] { "Bearer" } }
           });
       });
+
+      services.AddAuthorization(options =>
+      {
+        options.AddPolicy("WriteAccess", policy => policy.RequireClaim("permissions", "create:term", "update:term"));
+        options.AddPolicy("DeleteAccess", policy => policy.RequireClaim("permissions", "delete:term"));
+      });
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
