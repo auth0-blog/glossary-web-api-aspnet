@@ -27,7 +27,13 @@ namespace Glossary
       }).AddJwtBearer(options =>
       {
         options.Authority = $"https://{Configuration["Auth0:Domain"]}/";
-        options.Audience = Configuration["Auth0:Audience"];
+        options.TokenValidationParameters = 
+          new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+          {
+            ValidAudience = Configuration["Auth0:Audience"],
+            ValidIssuer = $"{Configuration["Auth0:Domain"]}",
+            ValidateLifetime = true,
+          };
       });
 
       services.AddControllers();
